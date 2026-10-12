@@ -4,10 +4,16 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ALL_BUILD", "ALL_BUILD.vcxproj", "{4D8B2955-A806-3774-93F2-F148C0A4EA53}"
 	ProjectSection(ProjectDependencies) = postProject
 		{C806F08B-7787-3019-8288-2FE22591FEC6} = {C806F08B-7787-3019-8288-2FE22591FEC6}
+		{E036C156-7FE0-3337-A899-8338DAC4DE08} = {E036C156-7FE0-3337-A899-8338DAC4DE08}
 	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ZERO_CHECK", "ZERO_CHECK.vcxproj", "{C806F08B-7787-3019-8288-2FE22591FEC6}"
 	ProjectSection(ProjectDependencies) = postProject
+	EndProjectSection
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "gunner", "gunner.vcxproj", "{E036C156-7FE0-3337-A899-8338DAC4DE08}"
+	ProjectSection(ProjectDependencies) = postProject
+		{C806F08B-7787-3019-8288-2FE22591FEC6} = {C806F08B-7787-3019-8288-2FE22591FEC6}
 	EndProjectSection
 EndProject
 Global
@@ -30,9 +36,17 @@ Global
 		{C806F08B-7787-3019-8288-2FE22591FEC6}.MinSizeRel|x64.Build.0 = MinSizeRel|x64
 		{C806F08B-7787-3019-8288-2FE22591FEC6}.RelWithDebInfo|x64.ActiveCfg = RelWithDebInfo|x64
 		{C806F08B-7787-3019-8288-2FE22591FEC6}.RelWithDebInfo|x64.Build.0 = RelWithDebInfo|x64
+		{E036C156-7FE0-3337-A899-8338DAC4DE08}.Debug|x64.ActiveCfg = Debug|x64
+		{E036C156-7FE0-3337-A899-8338DAC4DE08}.Debug|x64.Build.0 = Debug|x64
+		{E036C156-7FE0-3337-A899-8338DAC4DE08}.Release|x64.ActiveCfg = Release|x64
+		{E036C156-7FE0-3337-A899-8338DAC4DE08}.Release|x64.Build.0 = Release|x64
+		{E036C156-7FE0-3337-A899-8338DAC4DE08}.MinSizeRel|x64.ActiveCfg = MinSizeRel|x64
+		{E036C156-7FE0-3337-A899-8338DAC4DE08}.MinSizeRel|x64.Build.0 = MinSizeRel|x64
+		{E036C156-7FE0-3337-A899-8338DAC4DE08}.RelWithDebInfo|x64.ActiveCfg = RelWithDebInfo|x64
+		{E036C156-7FE0-3337-A899-8338DAC4DE08}.RelWithDebInfo|x64.Build.0 = RelWithDebInfo|x64
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
-		SolutionGuid = {8E4D4132-D841-37A7-934B-F7403A77A4BC}
+		SolutionGuid = {1A86061A-864B-354A-BC58-5A654EA88C88}
 	EndGlobalSection
 	GlobalSection(ExtensibilityAddIns) = postSolution
 	EndGlobalSection
