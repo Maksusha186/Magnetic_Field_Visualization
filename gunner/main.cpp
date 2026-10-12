@@ -18,9 +18,6 @@
 #include "ProjectManager.h"
 #include "UIManager.h"
 
-// ---------------------------------------------------------------------
-// Глобальное состояние приложения и камеры
-// ---------------------------------------------------------------------
 const unsigned int SCR_WIDTH = 1920;
 const unsigned int SCR_HEIGHT = 1080;
 
@@ -34,16 +31,13 @@ bool firstMouse = true;
 float deltaTime = 0.0f;
 float lastFrame = 0.0f;
 
-// Буферы геометрии осей и проекции соленоида
 unsigned int axesVAO = 0, axesVBO = 0;
 unsigned int projVAO = 0, projVBO = 0;
 std::vector<float> projVertices;
 
-// Буферы 3D модели соленоида
 unsigned int solenoidLineVAO = 0, solenoidLineVBO = 0, solenoidLineEBO = 0;
 unsigned int solenoidTriVAO = 0, solenoidTriVBO = 0, solenoidTriEBO = 0;
 
-// Прототипы функций
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 void mouse_callback(GLFWwindow* window, double xpos, double ypos);
 void scroll_callback(GLFWwindow* window, double xoffset, double yoffset);
@@ -54,11 +48,8 @@ void initAxesGeometry();
 void initSolenoidBuffers(const CentralSolenoid& solenoid);
 void updateSolenoidBuffers(const CentralSolenoid& solenoid);
 
-// ---------------------------------------------------------------------
-// MAIN
-// ---------------------------------------------------------------------
 int main() {
-    // 1. Инициализация GLFW
+
     glfwInit();
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
@@ -76,7 +67,7 @@ int main() {
     glfwSetScrollCallback(window, scroll_callback);
     glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
 
-    // 2. Инициализация GLAD
+
     if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress)) {
         std::cout << "Failed to initialize GLAD" << std::endl;
         return -1;
@@ -85,7 +76,7 @@ int main() {
     glEnable(GL_DEPTH_TEST);
     glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
 
-    // 3. Инициализация Шейдеров и Модулей
+
     Shader solidShader, sliceShader;
     solidShader.compileFromSource(ShaderSources::SOLID_VERTEX, ShaderSources::SOLID_FRAGMENT);
     sliceShader.compileFromSource(ShaderSources::SLICE_VERTEX, ShaderSources::SLICE_FRAGMENT);
@@ -98,7 +89,7 @@ int main() {
     lineRenderer.init();
     UIManager::init(window);
 
-    // 4. Инициализация геометрии и валидация
+
     initSolenoidBuffers(solenoid);
     initAxesGeometry();
     updateSolenoidProjection(solenoid);
@@ -106,7 +97,7 @@ int main() {
     Validation::validateFieldToCSV(solenoid);
     sliceRenderer.startCalculation(state, solenoid, 0.0f, -12.0f, 12.0f, -12.0f, 12.0f);
 
-    // 5. Главный цикл приложения
+
     while (!glfwWindowShouldClose(window)) {
         float currentFrame = static_cast<float>(glfwGetTime());
         deltaTime = currentFrame - lastFrame;
@@ -115,31 +106,25 @@ int main() {
         glfwPollEvents();
         processInput(window);
 
-        // Обновление VBO соленоида при изменении параметров
         if (solenoid.needsBufferUpdate) {
             updateSolenoidBuffers(solenoid);
             updateSolenoidProjection(solenoid);
             solenoid.needsBufferUpdate = false;
         }
 
-        // Проверка готовности асинхронных расчетов
         sliceRenderer.checkAsyncResults(state);
         lineRenderer.checkAsyncResults(state);
 
-        // Старт нового кадра ImGui
         UIManager::newFrame();
 
-        // Очистка экрана
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-        // Матрицы камеры
         glm::mat4 view = camera.GetViewMatrix();
         glm::mat4 projection = glm::perspective(glm::radians(camera.Zoom), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 100.0f);
         glm::mat4 model = glm::mat4(1.0f);
 
-        // --- РЕНДЕРИНГ СЦЕНЫ ---
         if (!state.showStartupWindow) {
-            // 1. Отрисовка 3D модели соленоида
+
             if (state.showSolenoid) {
                 glEnable(GL_DEPTH_TEST);
                 solidShader.use();
@@ -149,7 +134,6 @@ int main() {
 
                 const auto& mods = solenoid.getModules();
 
-                // Грани катушек (зеленые)
                 glBindVertexArray(solenoidTriVAO);
                 solidShader.setVec3("color", glm::vec3(0.2f, 0.8f, 0.2f));
                 for (int i = 0; i < 6; i++) {
@@ -157,7 +141,6 @@ int main() {
                         glDrawElements(GL_TRIANGLES, mods[i].triIndexCount, GL_UNSIGNED_INT, (void*)(uintptr_t)(mods[i].triIndexStart * sizeof(unsigned int)));
                 }
 
-                // Сетка wireframe (черная)
                 glBindVertexArray(solenoidLineVAO);
                 solidShader.setVec3("color", glm::vec3(0.0f, 0.0f, 0.0f));
                 for (int i = 0; i < 6; i++) {
@@ -166,17 +149,14 @@ int main() {
                 }
             }
 
-            // 2. Отрисовка цветового среза поля
             if (state.showField) {
                 sliceRenderer.draw(sliceShader, view, projection, state);
             }
 
-            // 3. Отрисовка силовых линий (RK4)
             if (state.showFieldLines) {
                 lineRenderer.draw(solidShader, view, projection, state);
             }
 
-            // 4. Отрисовка оверлеев (Проекция и Оси)
             glDisable(GL_DEPTH_TEST);
             solidShader.use();
             solidShader.setMat4("view", view);
@@ -194,17 +174,14 @@ int main() {
                 glLineWidth(2.0f);
                 glBindVertexArray(axesVAO);
 
-                // Z Axis (Красная)
                 solidShader.setVec3("color", glm::vec3(1.0f, 0.0f, 0.0f));
                 glDrawArrays(GL_LINES, 0, 2);
                 UIManager::draw3DLabel(glm::vec3(0.0f, 13.0f, 0.0f), "Z", view, projection, ImVec4(1, 0, 0, 1));
 
-                // X Axis (Зеленая)
                 solidShader.setVec3("color", glm::vec3(0.0f, 1.0f, 0.0f));
                 glDrawArrays(GL_LINES, 2, 2);
                 UIManager::draw3DLabel(glm::vec3(0.0f, 0.0f, 13.0f), "X", view, projection, ImVec4(0, 1, 0, 1));
 
-                // Y Axis (Синяя)
                 if (state.showXAxis) {
                     solidShader.setVec3("color", glm::vec3(0.0f, 0.0f, 1.0f));
                     glDrawArrays(GL_LINES, 4, 2);
@@ -214,7 +191,6 @@ int main() {
             glEnable(GL_DEPTH_TEST);
         }
 
-        // --- РЕНДЕРИНГ ИНТЕРФЕЙСА (ImGui) ---
         UIManager::renderUI(
             window, state, solenoid, camera, sliceRenderer, lineRenderer,
             [&]() { updateSolenoidProjection(solenoid); },
@@ -225,7 +201,6 @@ int main() {
         glfwSwapBuffers(window);
     }
 
-    // 6. Корректный останов фоновых потоков и очистка
     state.stopCalculation = true;
     state.stopLinesCalculation = true;
 
@@ -237,11 +212,8 @@ int main() {
     return 0;
 }
 
-// ---------------------------------------------------------------------
-// Вспомогательные функции инициализации буферов
-// ---------------------------------------------------------------------
 void initSolenoidBuffers(const CentralSolenoid& solenoid) {
-    // Сетка (Wireframe)
+
     glGenVertexArrays(1, &solenoidLineVAO);
     glGenBuffers(1, &solenoidLineVBO);
     glGenBuffers(1, &solenoidLineEBO);
@@ -254,7 +226,6 @@ void initSolenoidBuffers(const CentralSolenoid& solenoid) {
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(glm::vec3), (void*)0);
     glEnableVertexAttribArray(0);
 
-    // Грани (Triangles)
     glGenVertexArrays(1, &solenoidTriVAO);
     glGenBuffers(1, &solenoidTriVBO);
     glGenBuffers(1, &solenoidTriEBO);
@@ -330,9 +301,6 @@ void updateSolenoidProjection(const CentralSolenoid& solenoid) {
     glBindVertexArray(0);
 }
 
-// ---------------------------------------------------------------------
-// Обработка пользовательского ввода
-// ---------------------------------------------------------------------
 void processInput(GLFWwindow* window) {
     if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
         glfwSetWindowShouldClose(window, true);

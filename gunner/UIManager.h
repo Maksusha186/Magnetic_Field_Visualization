@@ -37,7 +37,7 @@ public:
     );
 
 private:
-    // Добавлен SliceRenderer& sliceRenderer в параметры
+
     static void renderStartupWindow(
         AppState& state,
         CentralSolenoid& solenoid,

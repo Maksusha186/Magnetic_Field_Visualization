@@ -17,26 +17,18 @@ public:
     Shader();
     ~Shader();
 
-    // Запрещаем копирование во избежание двойного удаления glDeleteProgram
     Shader(const Shader&) = delete;
     Shader& operator=(const Shader&) = delete;
 
-    // Поддержка перемещения (Move semantics)
     Shader(Shader&& other) noexcept;
     Shader& operator=(Shader&& other) noexcept;
 
-    // Компиляция из исходного кода в строках
     bool compileFromSource(const char* vertexSource, const char* fragmentSource);
 
-    // Загрузка и компиляция из файлов на диске
     bool loadFromFiles(const char* vertexPath, const char* fragmentPath);
 
-    // Активация шейдера (glUseProgram)
     void use() const;
 
-    // -----------------------------------------------------------------
-    // Утилиты для установки Uniform-переменных
-    // -----------------------------------------------------------------
     void setBool(const std::string& name, bool value) const;
     void setInt(const std::string& name, int value) const;
     void setFloat(const std::string& name, float value) const;
@@ -52,12 +44,8 @@ private:
     void checkCompileErrors(unsigned int shader, const std::string& type);
 };
 
-// ---------------------------------------------------------------------
-// Встроенные GLSL Шейдеры из оригинального main.cpp
-// ---------------------------------------------------------------------
 namespace ShaderSources {
 
-    // Шейдер для SOLENOID (поверхности, каркас, оси, линии)
     inline const char* SOLID_VERTEX = R"(
     #version 330 core
     layout (location = 0) in vec3 aPos;
@@ -78,7 +66,6 @@ namespace ShaderSources {
     }
     )";
 
-    // Шейдер для SLICE (текстурированный градиент с изолиниями)
     inline const char* SLICE_VERTEX = R"(
     #version 330 core
     layout (location = 0) in vec3 aPos;
@@ -126,6 +113,6 @@ namespace ShaderSources {
     }
     )";
 
-} // namespace ShaderSources
+}
 
 #endif // SHADER_H

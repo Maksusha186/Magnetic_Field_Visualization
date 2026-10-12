@@ -88,26 +88,22 @@ void ProjectManager::save(const std::string& name, const AppState& state, const 
             });
     }
 
-    // Запись основного JSON файла
     std::ofstream o("projects/" + name + ".json");
     o << std::setw(4) << j << std::endl;
     o.close();
 
-    // Сохранение бинарного файла среза (.field)
     if (state.textureValid && !state.fieldData.empty()) {
         std::ofstream bf("projects/" + name + ".field", std::ios::binary);
         bf.write((char*)state.fieldData.data(), state.fieldData.size() * sizeof(float));
         bf.close();
     }
 
-    // Сохранение бинарного файла силовых линий (.lines)
     if (!state.lineVertices.empty()) {
         std::ofstream lf("projects/" + name + ".lines", std::ios::binary);
         lf.write((char*)state.lineVertices.data(), state.lineVertices.size() * sizeof(float));
         lf.close();
     }
 
-    // Сохранение бинарного файла стрелок (.arrows)
     if (!state.arrowVertices.empty()) {
         std::ofstream af("projects/" + name + ".arrows", std::ios::binary);
         af.write((char*)state.arrowVertices.data(), state.arrowVertices.size() * sizeof(float));
@@ -151,7 +147,6 @@ bool ProjectManager::load(const std::string& name, AppState& state, CentralSolen
     solenoid.generateMesh();
     solenoid.needsBufferUpdate = true;
 
-    // Чтение файла среза (.field)
     std::ifstream f("projects/" + name + ".field", std::ios::binary);
     if (f) {
         state.fieldData.resize(state.textureWidth * state.textureHeight);
@@ -163,7 +158,6 @@ bool ProjectManager::load(const std::string& name, AppState& state, CentralSolen
         state.textureValid = false;
     }
 
-    // Чтение файла линий (.lines)
     std::ifstream lf("projects/" + name + ".lines", std::ios::binary);
     if (lf) {
         lf.seekg(0, std::ios::end);
@@ -177,7 +171,6 @@ bool ProjectManager::load(const std::string& name, AppState& state, CentralSolen
         state.lineVertices.clear();
     }
 
-    // Чтение файла стрелок (.arrows)
     std::ifstream af("projects/" + name + ".arrows", std::ios::binary);
     if (af) {
         af.seekg(0, std::ios::end);

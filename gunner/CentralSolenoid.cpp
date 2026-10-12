@@ -10,7 +10,7 @@ CentralSolenoid::CentralSolenoid() {
 }
 
 void CentralSolenoid::generateMesh() {
-    // 1. —начала заполн€ем модули по умолчанию, если массив пуст
+
     if (m_modules.empty()) {
         for (int i = 0; i < NUM_MODULES; i++) {
             CSModuleInfo info;
@@ -33,21 +33,18 @@ void CentralSolenoid::generateMesh() {
 
     const int CIRCLE_SEGMENTS = 32;
 
-    // 2. “еперь корректно рассчитываем начальную высоту Y дл€ центрировани€
     float currentY = 0.0f;
     for (auto& m : m_modules) {
         currentY -= (m.height + 0.05f);
     }
-    currentY /= 2.0f; // —мещение вниз, чтобы центр соленоида был в Y = 0
+    currentY /= 2.0f; 
 
-    // 3. √енераци€ геометрии и обновление координат yCenter каждого модул€
     for (int i = 0; i < static_cast<int>(m_modules.size()); i++) {
         CSModuleInfo& mod = m_modules[i];
         float yBottom = currentY;
         float yTop = currentY + mod.height;
         mod.yCenter = (yBottom + yTop) / 2.0f;
 
-        // Wireframe геометри€
         mod.vertexStart = (int)m_vertices.size();
         for (int s = 0; s < 4; s++) {
             float r = (s < 2) ? mod.outerRadius : mod.innerRadius;
@@ -78,7 +75,6 @@ void CentralSolenoid::generateMesh() {
         }
         mod.indexCount = (int)m_indices.size() - mod.indexStart;
 
-        // Surface геометри€ (треугольники)
         int triVertStart = (int)m_triangleVertices.size();
         mod.triIndexStart = (int)m_triangleIndices.size();
 

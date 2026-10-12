@@ -8,9 +8,8 @@ SliceRenderer::~SliceRenderer() {
 }
 
 void SliceRenderer::init() {
-    if (m_sliceVAO != 0) return; // Ужe инициализировано
+    if (m_sliceVAO != 0) return;
 
-    // Габариты плоскости среза по умолчанию
     float y_min = -12.0f, y_max = 12.0f;
     float z_min = -12.0f, z_max = 12.0f;
 
@@ -24,7 +23,6 @@ void SliceRenderer::init() {
 
     unsigned int indices[] = { 0, 1, 2, 0, 2, 3 };
 
-    // Создание буферов геометрии
     glGenVertexArrays(1, &m_sliceVAO);
     glGenBuffers(1, &m_sliceVBO);
     glGenBuffers(1, &m_sliceEBO);
@@ -37,17 +35,14 @@ void SliceRenderer::init() {
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_sliceEBO);
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
 
-    // Атрибут 0: Координаты (vec3)
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)0);
     glEnableVertexAttribArray(0);
 
-    // Атрибут 1: Текстурные UV (vec2)
     glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)(3 * sizeof(float)));
     glEnableVertexAttribArray(1);
 
     glBindVertexArray(0);
 
-    // Инициализация текстуры поля
     glGenTextures(1, &m_sliceTexture);
     glBindTexture(GL_TEXTURE_2D, m_sliceTexture);
 
@@ -56,7 +51,6 @@ void SliceRenderer::init() {
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 
-    // Начальное заполнение текстуры пустым форматом R32F (1x1 пиксель)
     float clearColor = 0.0f;
     glTexImage2D(GL_TEXTURE_2D, 0, GL_R32F, 1, 1, 0, GL_RED, GL_FLOAT, &clearColor);
 
@@ -84,7 +78,7 @@ void SliceRenderer::cleanup() {
 
 void SliceRenderer::startCalculation(AppState& state, const CentralSolenoid& solenoid,
     float xPlane, float yMin, float yMax, float zMin, float zMax) {
-    // Сброс флагов и подготовка буферов
+
     state.stopCalculation = false;
     state.calculationProgress = 0.0f;
     state.isCalculating = true;
@@ -95,10 +89,8 @@ void SliceRenderer::startCalculation(AppState& state, const CentralSolenoid& sol
     state.textureHeight = h;
     state.fieldData.assign(w * h, 0.0f);
 
-    // Копируем модули для потокобезопасности (Data Race Protection)
     std::vector<CSModuleInfo> modulesCopy = solenoid.getModules();
 
-    // Запуск фонового асинхронного потока
     state.calcThread = std::async(std::launch::async, computeSliceTask,
         modulesCopy,
         std::ref(state.fieldData),
@@ -156,7 +148,6 @@ void SliceRenderer::computeSliceTask(
     for (auto& f : futures) f.get();
     if (stopFlag) return;
 
-    // Нормализация значений в диапазон [0.0, 1.0] с гамма-коррекцией
     float B_min = *std::min_element(raw_B.begin(), raw_B.end());
     float B_max = *std::max_element(raw_B.begin(), raw_B.end());
     float range = B_max - B_min;

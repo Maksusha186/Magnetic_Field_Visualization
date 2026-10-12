@@ -193,7 +193,7 @@ void UIManager::renderStartupWindow(
 
             ImGui::SameLine(ImGui::GetWindowWidth() - 150);
             if (ImGui::Button("Open", ImVec2(60, 0))) {
-                // 1. Ожидаем завершения фоновых расчетов
+
                 state.stopCalculation = true;
                 state.stopLinesCalculation = true;
                 if (state.calcThread.valid()) state.calcThread.wait();
@@ -206,11 +206,9 @@ void UIManager::renderStartupWindow(
                 state.arrowVertices.clear();
                 state.textureValid = false;
 
-                // 2. Загрузка файла с диска
                 if (ProjectManager::load(p.name, state, solenoid, camera)) {
                     state.currentProjectName = p.name;
 
-                    // 3. Отправка загруженных данных в GPU
                     if (state.textureValid) {
                         sliceRenderer.uploadTextureData(state);
                     }

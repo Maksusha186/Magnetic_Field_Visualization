@@ -13,9 +13,8 @@ LineRenderer::~LineRenderer() {
 }
 
 void LineRenderer::init() {
-    if (m_linesVAO != 0) return; // Уже инициализировано
+    if (m_linesVAO != 0) return;
 
-    // Буфер для самих силовых линий
     glGenVertexArrays(1, &m_linesVAO);
     glGenBuffers(1, &m_linesVBO);
 
@@ -24,7 +23,6 @@ void LineRenderer::init() {
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
     glEnableVertexAttribArray(0);
 
-    // Буфер для стрелок направления
     glGenVertexArrays(1, &m_arrowsVAO);
     glGenBuffers(1, &m_arrowsVBO);
 
@@ -63,10 +61,8 @@ void LineRenderer::startCalculation(AppState& state, const CentralSolenoid& sole
     state.threadLineVertices.clear();
     state.threadArrowVertices.clear();
 
-    // Копируем модули для потокобезопасности (Data Race Protection)
     std::vector<CSModuleInfo> modulesCopy = solenoid.getModules();
 
-    // Запуск фонового асинхронного потока
     state.linesCalcThread = std::async(std::launch::async, computeLinesTask,
         modulesCopy,
         std::ref(state.threadLineVertices),
@@ -109,9 +105,7 @@ void LineRenderer::computeLinesTask(
     float solenoidR = modules.empty() ? 1.3f : modules[0].innerRadius;
 
     for (int r = 0; r < rDensity; r++) {
-        // РАСПРЕДЕЛЕНИЕ ТОЧЕК:
-        // Первые слои - внутри соленоида (аксиальные линии)
-        // Последние слои - снаружи (широкие дуги)
+
         float currentStartR = 0.05f + (solenoidR * 3.0f) * (powf((float)r / (float)rDensity, 1.5f));
 
         for (int a = 0; a < aDensity; a++) {
@@ -136,7 +130,6 @@ void LineRenderer::computeLinesTask(
 
                     glm::vec3 currDir = glm::normalize(B) * (float)dir;
 
-                    // АВТОМАТИЧЕСКИЙ ВЫБОР ШАГА
                     if (adaptive && j > 0) {
                         float angleDiff = acosf(glm::clamp(glm::dot(currDir, prevDir), -1.0f, 1.0f));
                         if (angleDiff > 0.02f) currentStep = (std::max)(0.01f, currentStep * 0.8f);
@@ -147,11 +140,11 @@ void LineRenderer::computeLinesTask(
                     glm::vec3 nextP = MagneticField::getNextLinePoint(p, currentStep * (float)dir, fieldFuncInternal);
 
                     float yLevel = startP.y; // 0.1f
-                    // Проверка пересечения стартовой плоскости
+
                     bool crossedPlane = (p.y - yLevel) * (nextP.y - yLevel) < 0.0f;
 
                     if (j > 50 && crossedPlane) {
-                        // Расстояние (X, Z) в момент пересечения
+
                         float dXZ = glm::distance(glm::vec2(nextP.x, nextP.z), glm::vec2(startP.x, startP.z));
 
                         if (dXZ < 0.5f) {
@@ -168,7 +161,6 @@ void LineRenderer::computeLinesTask(
 
                     outLineVertices.insert(outLineVertices.end(), { p.x, p.y, p.z, nextP.x, nextP.y, nextP.z });
 
-                    // Генерация геометрии стрелок направления
                     if (showArrows && j % 50 == 0 && j > 0) {
                         glm::vec3 B_arrow = fieldFuncInternal(p);
                         float Bmag_arrow = glm::length(B_arrow);
@@ -221,11 +213,9 @@ void LineRenderer::checkAsyncResults(AppState& state) {
 void LineRenderer::uploadBufferData(AppState& state) {
     if (m_linesVBO == 0) return;
 
-    // Загрузка вершин линий
     glBindBuffer(GL_ARRAY_BUFFER, m_linesVBO);
     glBufferData(GL_ARRAY_BUFFER, state.lineVertices.size() * sizeof(float), state.lineVertices.data(), GL_STATIC_DRAW);
 
-    // Загрузка вершин стрелок
     glBindBuffer(GL_ARRAY_BUFFER, m_arrowsVBO);
     glBufferData(GL_ARRAY_BUFFER, state.arrowVertices.size() * sizeof(float), state.arrowVertices.data(), GL_STATIC_DRAW);
 
@@ -242,15 +232,13 @@ void LineRenderer::draw(const Shader& solidShader, const glm::mat4& view, const 
     solidShader.setMat4("view", view);
     solidShader.setMat4("projection", projection);
     solidShader.setMat4("model", glm::mat4(1.0f));
-    solidShader.setVec3("color", glm::vec3(1.0f, 1.0f, 1.0f)); // Белый цвет линий
+    solidShader.setVec3("color", glm::vec3(1.0f, 1.0f, 1.0f)); 
 
     glLineWidth(1.5f);
 
-    // Отрисовка самих линий
     glBindVertexArray(m_linesVAO);
     glDrawArrays(GL_LINES, 0, static_cast<GLsizei>(state.lineVertices.size() / 3));
 
-    // Отрисовка стрелок
     if (state.showLineArrows && !state.arrowVertices.empty() && m_arrowsVAO != 0) {
         glBindVertexArray(m_arrowsVAO);
         glDrawArrays(GL_LINES, 0, static_cast<GLsizei>(state.arrowVertices.size() / 3));

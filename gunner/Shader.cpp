@@ -29,26 +29,22 @@ bool Shader::compileFromSource(const char* vertexSource, const char* fragmentSou
         ID = 0;
     }
 
-    // 1. —борка Vertex Shader
     unsigned int vertex = glCreateShader(GL_VERTEX_SHADER);
     glShaderSource(vertex, 1, &vertexSource, NULL);
     glCompileShader(vertex);
     checkCompileErrors(vertex, "VERTEX");
 
-    // 2. —борка Fragment Shader
     unsigned int fragment = glCreateShader(GL_FRAGMENT_SHADER);
     glShaderSource(fragment, 1, &fragmentSource, NULL);
     glCompileShader(fragment);
     checkCompileErrors(fragment, "FRAGMENT");
 
-    // 3. Ћинковка Shader Program
     ID = glCreateProgram();
     glAttachShader(ID, vertex);
     glAttachShader(ID, fragment);
     glLinkProgram(ID);
     checkCompileErrors(ID, "PROGRAM");
 
-    // ”дал€ем шейдеры, так как они уже скомпонованы в программу
     glDeleteShader(vertex);
     glDeleteShader(fragment);
 
@@ -92,9 +88,6 @@ void Shader::use() const {
     }
 }
 
-// ---------------------------------------------------------------------
-// Setters
-// ---------------------------------------------------------------------
 void Shader::setBool(const std::string& name, bool value) const {
     glUniform1i(glGetUniformLocation(ID, name.c_str()), (int)value);
 }

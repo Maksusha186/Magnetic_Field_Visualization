@@ -28,13 +28,11 @@ namespace Validation {
             for (const auto& mod : mods) {
                 if (!mod.isCalculationEnabled) continue;
 
-                // 1. Численный расчет для конкретного модуля (векторная сумма)
                 B_num_total_vec += MagneticField::fieldFromCSModuleNumerical(
                     p, mod.yCenter, mod.height, mod.innerRadius, mod.outerRadius,
                     mod.current * (float)mod.turns, nRad, nVert
                 );
 
-                // 2. Аналитический расчет индивидуально для катушки
                 float R1 = mod.innerRadius;
                 float R2 = mod.outerRadius;
                 float NI = mod.current * (float)mod.turns;
@@ -67,19 +65,17 @@ namespace Validation {
         for (float x = 0.0f; x <= 10.0f; x += 0.2f) {
             glm::vec3 p(x, 0.0f, 0.0f);
 
-            float B_fast = 0.0f; // Быстрый сетчатый расчет (32x32)
-            float B_ref = 0.0f;  // Эталонный высокоточный расчет (100x100)
+            float B_fast = 0.0f; 
+            float B_ref = 0.0f;  
 
             for (const auto& mod : mods) {
                 if (!mod.isCalculationEnabled) continue;
 
-                // Рендерная сетка
                 B_fast += glm::length(MagneticField::fieldFromCSModuleNumerical(
                     p, mod.yCenter, mod.height, mod.innerRadius, mod.outerRadius,
                     mod.current * (float)mod.turns, 32, 32
                 ));
 
-                // Высокоточный референс
                 B_ref += glm::length(MagneticField::fieldFromCSModuleNumerical(
                     p, mod.yCenter, mod.height, mod.innerRadius, mod.outerRadius,
                     mod.current * (float)mod.turns, 100, 100
