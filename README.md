@@ -40,31 +40,32 @@
 
 Команды:
 
+```
 mkdir build
 cd build
 cmake .. -G "Visual Studio 17 2022" -A x64
 cmake --build . --target gunner --config Release
-
+```
 ## Запуск
 
 build/Release/gunner.exe
 
 ## Структура проекта
 
-main.cpp — точка входа
-AppState.h — состояние приложения
-CentralSolenoid.cpp/.h — геометрия и поле центрального соленоида
-LineRenderer.cpp/.h — отрисовка силовых линий
-SliceRenderer.cpp/.h — отрисовка среза поля
-Shader.cpp/.h — работа с шейдерами
-UIManager.cpp/.h — интерфейс ImGui
-ProjectManager.cpp/.h — управление проектом
-Validation.cpp/.h — валидация расчётов
-camera.h — камера
-physics.h — физические константы и формулы
-imgui/ — библиотека ImGui
-libraries/ — GLFW, GLM, glad
-CMakeLists.txt — сборка
+- main.cpp — точка входа
+- AppState.h — состояние приложения
+- CentralSolenoid.cpp/.h — геометрия и поле центрального соленоида
+- LineRenderer.cpp/.h — отрисовка силовых линий
+- SliceRenderer.cpp/.h — отрисовка среза поля
+- Shader.cpp/.h — работа с шейдерами
+- UIManager.cpp/.h — интерфейс ImGui
+- ProjectManager.cpp/.h — управление проектом
+- Validation.cpp/.h — валидация расчётов
+- camera.h — камера
+- physics.h — физические константы и формулы
+- imgui/ — библиотека ImGui
+- libraries/ — GLFW, GLM, glad
+- CMakeLists.txt — сборка
 
 ## Реализовано
 
@@ -76,10 +77,10 @@ CMakeLists.txt — сборка
 
 ## Автор
 
-Гайченко Максим Евгеньевич
-НГТУ, ФПМИ, Прикладная математика и информатика
-GitHub: https://github.com/Maksusha186
-Email: strahlderunke@gmail.com
+**Гайченко Максим Евгеньевич**
+- НГТУ, ФПМИ, Прикладная математика и информатика
+- GitHub: https://github.com/Maksusha186
+- Email: strahlderunke@gmail.com
 
 ## Лицензия
 
