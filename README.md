@@ -1,1 +1,1 @@
-docs/screenshot1.png
+![Скриншот](docs/screenshot1.png)
