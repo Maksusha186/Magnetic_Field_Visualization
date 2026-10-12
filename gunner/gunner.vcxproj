@@ -175,6 +175,9 @@
     <ClInclude Include="UIManager.h" />
     <ClInclude Include="Validation.h" />
   </ItemGroup>
+  <ItemGroup>
+    <Text Include="CMakeLists.txt" />
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
     <Import Project="..\packages\glm.1.0.2\build\native\glm.targets" Condition="Exists('..\packages\glm.1.0.2\build\native\glm.targets')" />

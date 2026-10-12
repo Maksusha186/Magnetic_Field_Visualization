@@ -1,0 +1,7 @@
+{
+	"InstallScripts" : 
+	[
+		"C:/gunner/gunner/gunner/build/cmake_install.cmake"
+	],
+	"Parallel" : false
+}

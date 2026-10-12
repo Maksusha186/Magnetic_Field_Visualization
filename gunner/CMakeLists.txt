@@ -1,0 +1,28 @@
+cmake_minimum_required(VERSION 3.15)
+project(gunner LANGUAGES C CXX)
+
+set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+
+find_package(glfw3 REQUIRED)
+find_package(glm REQUIRED)
+find_package(OpenGL REQUIRED)
+
+file(GLOB SOURCES
+    "*.cpp"
+    "*.c"
+    "imgui/*.cpp"
+)
+
+add_executable(gunner ${SOURCES})
+
+target_include_directories(gunner PRIVATE
+    "."
+    "imgui"
+)
+
+target_link_libraries(gunner PRIVATE
+    glfw
+    glm::glm
+    OpenGL::GL
+)
