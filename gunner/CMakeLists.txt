@@ -9,6 +9,9 @@ set(LIBS_DIR "${CMAKE_SOURCE_DIR}/libraries")
 set(GLFW_INCLUDE_DIR "${LIBS_DIR}/include")
 set(GLFW_LIBRARY "${LIBS_DIR}/lib/glfw3.lib")
 
+# GLM из NuGet-пакетов
+set(GLM_INCLUDE_DIR "${CMAKE_SOURCE_DIR}/../packages/glm.1.0.2/build/native/include")
+
 find_package(OpenGL REQUIRED)
 
 add_executable(gunner
@@ -33,6 +36,7 @@ target_include_directories(gunner PRIVATE
     "."
     "imgui"
     ${GLFW_INCLUDE_DIR}
+    ${GLM_INCLUDE_DIR}
 )
 
 target_link_libraries(gunner PRIVATE
