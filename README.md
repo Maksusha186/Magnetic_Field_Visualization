@@ -48,7 +48,9 @@ cmake --build . --target gunner --config Release
 ```
 ## Запуск
 
+```
 build/Release/gunner.exe
+```
 
 ## Структура проекта
 
